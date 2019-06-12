@@ -1,5 +1,21 @@
 package find_maximum
 
-func findMax(elements []interface{}, fn func(elements []interface{}) (interface{}, error)) (interface{}, error) {
-	return fn(elements)
+func FindMax(items []interface{}, greater func(currentIndex, maxValueIndex int) bool) interface{} {
+	indexWithMaxValue := -1
+
+	lastIndex := len(items) - 1
+
+	for index := range items {
+		if indexWithMaxValue == -1 {
+			indexWithMaxValue = index
+		}
+
+		if index <= lastIndex {
+			if greater(index, indexWithMaxValue) {
+				indexWithMaxValue = index
+			}
+		}
+	}
+
+	return items[indexWithMaxValue]
 }

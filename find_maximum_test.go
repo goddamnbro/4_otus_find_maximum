@@ -1,35 +1,17 @@
 package find_maximum
 
 import (
-	"github.com/pkg/errors"
 	"testing"
 )
 
-
 func TestFindMaximumInt(t *testing.T) {
-	numbers := []interface{}{10, 7, 3, 6, 6, 1, 0}
-	expected := 10
+	numbers := []interface{}{10, 7, 3, 6, 6, 1, 100}
 
-	finder := func(elements []interface{}) (interface{}, error) {
-		// we can't use default 0 for min value, because we can get slice with negative values
-		maxValue := -1 << 63
+	actual := FindMax(numbers, func(currentIndex, maxValueIndex int) bool {
+		return numbers[currentIndex].(int) > numbers[maxValueIndex].(int)
+	})
 
-		for _, element := range elements {
-			num, ok := element.(int)
-			if !ok {
-				return nil, errors.New("Your comparator function doesn't match the type of slice")
-			}
-			if num > maxValue {
-				maxValue = num
-			}
-		}
-		return maxValue, nil
-	}
-
-	actual, err := findMax(numbers, finder)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	expected := 100
 	if actual != expected {
 		t.Errorf("Expected: %v, but actual: %v", expected, actual)
 	}
@@ -38,35 +20,21 @@ func TestFindMaximumInt(t *testing.T) {
 func TestFindMaximumAge(t *testing.T) {
 	type Person struct {
 		Name string
-		Age uint
+		Age  uint
 	}
 
-	persons  := []interface{}{
+	persons := []interface{}{
 		Person{Name: "Ivan", Age: 20},
 		Person{Name: "Semen", Age: 27},
 		Person{Name: "Petr", Age: 31},
 	}
 
-	finder := func(elements []interface{}) (interface{}, error) {
-		var maxValue uint
-
-		for _, element := range elements {
-			person, ok := element.(Person)
-			if !ok {
-				return nil, errors.New("Your comparator function doesn't match the type of slice")
-			}
-			if person.Age > maxValue {
-				maxValue = person.Age
-			}
-		}
-		return maxValue, nil
-	}
-
-	expected := uint(31)
-	actual, err := findMax(persons, finder)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	expected := Person{Name: "Petr", Age: 31}
+	actual := FindMax(persons, func(currentIndex, maxValueIndex int) bool {
+		person := persons[currentIndex].(Person)
+		oldestPerson := persons[maxValueIndex].(Person)
+		return person.Age > oldestPerson.Age
+	})
 	if actual != expected {
 		t.Errorf("Expected: %v, but actual: %v", expected, actual)
 	}
